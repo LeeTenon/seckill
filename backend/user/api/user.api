@@ -1,0 +1,54 @@
+syntax = "v1"
+
+info (
+	title: "userService"
+	desc: "for login and register"
+	author: "LeeTenon"
+	email: "leetenon@qq.com"
+)
+
+// register api
+type (
+	RegisterReq {
+		UserName string `json:"userName" form:"userName"`
+		Password string `json:"password" form:"password"`
+	}
+	RegisterResp {
+		OK bool `json:"ok"`
+	}
+)
+
+// login api
+type (
+	LoginReq {
+		UserName string `json:"userName"`
+		Password string `json:"password"`
+	}
+	LoginResp {
+		ID     int    `json:"id"`
+		Name   string `json:"name"`
+		Avatar string `json:"avatar"`
+		Token  string `json:"token"`
+	}
+)
+
+// 图片验证码
+type (
+	VerifyReq {
+		Ticket string `json:"ticket"`
+	}
+	VerifyResp {
+		Data string `json:"data"`
+	}
+)
+
+service user-api {
+	@handler LoginHandler
+	post /users/login(LoginReq) returns(LoginResp)
+	
+	@handler RegisterHandler
+	post /users/register(RegisterReq) returns(RegisterResp)
+	
+	@handler VerifyHandler
+	get /users/verify(VerifyReq) returns(VerifyResp)
+}
