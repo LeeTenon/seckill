@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package product_info;
+
+message ListReq {
+  int32 page = 1;
+  int32 size = 2;
+  string category = 3;
+  int32 priceOrder = 4;
+}
+
+message ProductProfile {
+  int32 id = 1;
+  string name = 2;
+  string category = 3;
+  float  price = 4;
+  string title = 5;
+}
+
+message ListResp {
+  repeated ProductProfile list = 1;
+}
+
+message DetailReq {
+  uint32 id = 1;
+}
+
+message DetailResp {
+  ProductProfile profile = 1;
+  uint32 storage = 2;
+  string description = 3;
+}
+
+service Product_info {
+  // 获取商品列表
+  rpc GetList(ListReq) returns(ListResp);
+  // 获取商品详情
+  rpc GetDetail(DetailReq) returns(DetailResp);
+}

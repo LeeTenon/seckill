@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package login;
+
+message loginReq {
+  string userName = 1;
+  string password = 2;
+}
+
+message loginResp {
+  int64 id = 1;
+  string name = 2;
+  string avatar = 3;
+  string token = 4;
+}
+
+service Login {
+  rpc login(loginReq) returns(loginResp);
+}
