@@ -18,7 +18,7 @@ message ProductProfile {
 }
 
 message ListResp {
-  repeated ProductProfile list = 1;
+  bytes List = 1;
 }
 
 message DetailReq {

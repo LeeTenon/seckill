@@ -1,11 +1,12 @@
 package logic
 
 import (
-	"Tstore/backend/product/rpc/product_info/productinfoclient"
-	"context"
-
 	"Tstore/backend/product/api/internal/svc"
 	"Tstore/backend/product/api/internal/types"
+	"Tstore/backend/product/rpc/product_info/productinfoclient"
+	"Tstore/models"
+	"context"
+	"encoding/json"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -36,9 +37,20 @@ func (l *GetListLogic) GetList(req *types.GetListReq) (*types.GetListResp, error
 		logx.Error(err)
 		return nil, err
 	}
+	date := make([]*models.ProductProfile, 2)
+	err = json.Unmarshal(result.List, &date)
+	if err != nil {
+		println("1")
+		println("1")
+		println("1")
+		println("1")
+		println("1")
+		println("1")
+		return nil, err
+	}
 
 	resp := &types.GetListResp{
-		List: result.List,
+		List: date,
 	}
 
 	return resp, nil
