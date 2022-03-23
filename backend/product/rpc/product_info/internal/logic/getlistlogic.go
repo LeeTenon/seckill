@@ -30,10 +30,7 @@ func (l *GetListLogic) GetList(in *product_info.ListReq) (*product_info.ListResp
 	limit := (in.Page - 1) * in.Size
 	result, err := dao.ProductDao.GetList(l.svcCtx.DbEngin, int(limit), int(in.Size))
 	if err != nil {
-		if err == dao.ErrorNoData {
-			return nil, errors.New("无商品数据")
-		}
-		return nil, err
+		return nil, errors.New("无商品数据")
 	}
 
 	// 序列化

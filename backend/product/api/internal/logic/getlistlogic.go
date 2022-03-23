@@ -6,8 +6,10 @@ import (
 	"Tstore/backend/product/rpc/product_info/productinfoclient"
 	"Tstore/models"
 	"context"
-	"encoding/json"
+	"fmt"
+	"strconv"
 
+	"encoding/json"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -26,32 +28,44 @@ func NewGetListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetListLo
 }
 
 func (l *GetListLogic) GetList(req *types.GetListReq) (*types.GetListResp, error) {
+	// 查询缓存：1. 根据分类和页码缓存商品列表（热点数据）；2.价格排序页面进行缓存（快速排序）。
+	fmt.Printf("list:%s:%s", req.Category, strconv.Itoa(req.Page))
+	cc, err := l.svcCtx.Cache.Get(fmt.Sprintf("list:%s:%s", req.Category, strconv.Itoa(req.Page)))
+	if err == nil && cc != "" {
+		return getResp([]byte(cc))
+	}
+
+	// 查询DB列表
 	size := 5
 	result, err := l.svcCtx.ProductInfoHandle.GetList(l.ctx, &productinfoclient.ListReq{
 		Page:       int32(req.Page),
 		Size:       int32(size),
 		Category:   req.Category,
-		PriceOrder: 0,
+		PriceOrder: 0, // 价格排序功能暂定
 	})
 	if err != nil {
 		logx.Error(err)
 		return nil, err
 	}
-	date := make([]*models.ProductProfile, 2)
-	err = json.Unmarshal(result.List, &date)
+
+	// 写入缓存
+	l.svcCtx.Cache.Set(fmt.Sprintf("list:%s:%s", req.Category, strconv.Itoa(req.Page)), string(result.List))
+
+	// 返回消息体
+	return getResp(result.List)
+}
+
+func getResp(js []byte) (*types.GetListResp, error) {
+	// 列表反序列化
+	date := make([]*models.ProductProfile, 0)
+	err := json.Unmarshal(js, &date)
 	if err != nil {
-		println("1")
-		println("1")
-		println("1")
-		println("1")
-		println("1")
-		println("1")
 		return nil, err
 	}
 
+	// 返回消息体
 	resp := &types.GetListResp{
 		List: date,
 	}
-
 	return resp, nil
 }

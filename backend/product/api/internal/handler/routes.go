@@ -14,7 +14,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/product/:category",
+				Path:    "/product/list/:category/:page/:price_order",
 				Handler: GetListHandler(serverCtx),
 			},
 			{

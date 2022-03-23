@@ -1,16 +1,17 @@
 Name: product-api
+Log:
+  Level: error
+Mode: dev
 Host: 0.0.0.0
 Port: 8888
+
 
 ProductInfo:
   Etcd:
     Hosts:
-      - localhost:2379
+    - localhost:2379
     Key: productinfo.rpc
-
-
 
 Auth:
   AccessSecret: LeeTenon
   AccessExpire: 3600
-

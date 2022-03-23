@@ -2,7 +2,6 @@ package dao
 
 import (
 	"Tstore/models"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -12,23 +11,14 @@ type productDao struct {
 }
 
 func (*productDao) GetList(db *gorm.DB, limit, size int) ([]*models.ProductProfile, error) {
-	productList := make([]*models.ProductProfile, 0)
-
-	println(limit, size)
-	rows, err := db.Table("product").Select("id,name,category,price,title").Rows()
+	// DB查询
+	productList := make([]*models.ProductProfile, 5)
+	rows, err := db.Table("product").Offset(limit).Limit(size).Select("id,name,category,price,title").Find(&productList).Rows()
 	if err != nil {
 		return nil, err
+	} else if !rows.Next() {
+		return nil, ErrorNoData
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		productprofile := &models.ProductProfile{}
-		err = rows.Scan(&productprofile.ID, &productprofile.Name, &productprofile.Category, &productprofile.Price, &productprofile.Title)
-		if err != nil {
-			println(err.Error())
-		}
-		println(productprofile.Name)
-		productList = append(productList, productprofile)
-	}
 	return productList, nil
 }
