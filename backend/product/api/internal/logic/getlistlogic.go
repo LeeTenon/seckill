@@ -5,11 +5,12 @@ import (
 	"Tstore/backend/product/api/internal/types"
 	"Tstore/backend/product/rpc/product_info/productinfoclient"
 	"Tstore/models"
+
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 
-	"encoding/json"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -28,15 +29,24 @@ func NewGetListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetListLo
 }
 
 func (l *GetListLogic) GetList(req *types.GetListReq) (*types.GetListResp, error) {
+	// 价格排序页处理
+	if req.PriceOrder == 1 {
+		priceOrderListIncr() // 价格增序
+	} else if req.PriceOrder == 2 {
+		priceOrderListDecr() // 价格降序
+	}
+
+	// 正常分类页处理
 	// 查询缓存：1. 根据分类和页码缓存商品列表（热点数据）；2.价格排序页面进行缓存（快速排序）。
-	fmt.Printf("list:%s:%s", req.Category, strconv.Itoa(req.Page))
 	cc, err := l.svcCtx.Cache.Get(fmt.Sprintf("list:%s:%s", req.Category, strconv.Itoa(req.Page)))
 	if err == nil && cc != "" {
 		return getResp([]byte(cc))
+	} else if err != nil {
+		return nil, err
 	}
 
 	// 查询DB列表
-	size := 5
+	size := 5 // 需移至前端请求中
 	result, err := l.svcCtx.ProductInfoHandle.GetList(l.ctx, &productinfoclient.ListReq{
 		Page:       int32(req.Page),
 		Size:       int32(size),
@@ -55,6 +65,15 @@ func (l *GetListLogic) GetList(req *types.GetListReq) (*types.GetListResp, error
 	return getResp(result.List)
 }
 
+func priceOrderListIncr() {
+
+}
+
+func priceOrderListDecr() {
+
+}
+
+// getResp 消息体返回函数
 func getResp(js []byte) (*types.GetListResp, error) {
 	// 列表反序列化
 	date := make([]*models.ProductProfile, 0)

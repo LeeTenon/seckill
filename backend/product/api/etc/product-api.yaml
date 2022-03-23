@@ -1,9 +1,11 @@
 Name: product-api
 Log:
-  Level: error
+  Level: severe
 Mode: dev
 Host: 0.0.0.0
 Port: 8888
+
+CacheRedis: 127.0.0.1:6379
 
 
 ProductInfo:

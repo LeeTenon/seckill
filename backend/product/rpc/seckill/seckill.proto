@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package seckill;
+
+message Request {
+  uint32 pid = 1;
+  uint32 num = 2;
+}
+
+message Response {
+  string oid = 1;
+  string pName =2;
+  float price = 3;
+}
+
+service SecKill {
+  rpc SecKillOrder(Request) returns(Response);
+}
